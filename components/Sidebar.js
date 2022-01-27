@@ -6,31 +6,49 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
 import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc, query, where } from "firebase/firestore";
+
+import Chat from "../components/Chat.js";
 
 export default function Sidebar() {
   const [user] = useAuthState(auth);
+  const chatsRef = collection(db, "chats");
+  const userChatRef = query(
+    chatsRef,
+    where("users", "array-contains", user.email)
+  );
+  const [chatsSnapshot] = useCollection(userChatRef);
 
   const createChat = () => {
     const input = prompt("Insert an e-Mail address!");
 
     if (!input) return null;
 
-    if (EmailValidator.validate(input)) {
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
+    ) {
       //add chat into DB collection
-      const chatsRef = collection(db, "chats");
-
       setDoc(doc(chatsRef), {
         users: [user.email, input],
       });
     }
   };
 
+  const chatAlreadyExists = (recipientEmail) => {
+    return !!chatsSnapshot?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === recipientEmail)?.length > 0
+    );
+  };
+
   return (
     <Container>
       <Header>
-        <UsrAvatar />
+        <UsrAvatar src={user.photoURL} onClick={() => auth.signOut()} />
         <IconsContainer>
           <IconButton>
             <ChatIcon />
@@ -47,7 +65,10 @@ export default function Sidebar() {
       </Search>
       <SearchButton onClick={createChat}>START NEW CHAT</SearchButton>
 
-      <Contacts>{/* List of chats */}</Contacts>
+      {/* List of chats */}
+      {chatsSnapshot?.docs.map((chat) => (
+        <Chat key={chat.id} id={chat.id} users={chat.data().users} />
+      ))}
     </Container>
   );
 }
@@ -90,4 +111,3 @@ const SearchButton = styled(Button)`
     border-bottom: 2px solid whitesmoke;
   }
 `;
-const Contacts = styled.div``;

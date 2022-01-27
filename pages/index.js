@@ -26,5 +26,7 @@ export default function Home() {
 // material ui / icons
 // firebase
 // email validator
-// react-firebase-hooks 
-// better-react-spinkit
+// react-firebase-hooks
+
+// get url image from recipients
+// build chat screen
