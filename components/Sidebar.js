@@ -4,8 +4,29 @@ import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
+import * as EmailValidator from "email-validator";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "../firebase";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 export default function Sidebar() {
+  const [user] = useAuthState(auth);
+
+  const createChat = () => {
+    const input = prompt("Insert an e-Mail address!");
+
+    if (!input) return null;
+
+    if (EmailValidator.validate(input)) {
+      //add chat into DB collection
+      const chatsRef = collection(db, "chats");
+
+      setDoc(doc(chatsRef), {
+        users: [user.email, input],
+      });
+    }
+  };
+
   return (
     <Container>
       <Header>
@@ -19,11 +40,13 @@ export default function Sidebar() {
           </IconButton>
         </IconsContainer>
       </Header>
+
       <Search>
         <SearchIcon />
         <SearchInput placeholder="Search for chats..." />
       </Search>
-      <SearchButton>START NEW CHAT</SearchButton>
+      <SearchButton onClick={createChat}>START NEW CHAT</SearchButton>
+
       <Contacts>{/* List of chats */}</Contacts>
     </Container>
   );
