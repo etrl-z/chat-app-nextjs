@@ -8,6 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
 import { collection, doc, setDoc, query, where } from "firebase/firestore";
+import { useRouter } from "next/router";
 
 import Chat from "../components/Chat.js";
 
@@ -42,10 +43,16 @@ export default function Sidebar() {
     );
   };
 
+  const router = useRouter();
+  const signOut = () => {
+    auth.signOut();
+    //router.push(router.pathname.split('/')[0]);
+  }
+
   return (
     <Container>
       <Header>
-        <UsrAvatar src={user.photoURL} onClick={() => auth.signOut()} />
+        <UsrAvatar src={user.photoURL} onClick={signOut} />
         <IconsContainer>
           <IconButton>
             <ChatIcon />
@@ -57,7 +64,7 @@ export default function Sidebar() {
       </Header>
 
       <Search>
-        <SearchIconStyled />
+        <SearchIcon />
         <SearchInput placeholder="Search for chats..." />
       </Search>
       <SearchButton onClick={createChat}>START NEW CHAT</SearchButton>
@@ -93,9 +100,7 @@ const Search = styled.div`
   display: flex;
   align-items: center;
   height: 50px;
-`;
-const SearchIconStyled = styled(SearchIcon)`
-  margin-left: 10px;
+  padding: 0 10px;
 `;
 const SearchInput = styled.input`
   border: 0;

@@ -5,8 +5,13 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Message from "./Message.js";
 
 export default function ChatScreen() {
-  const txt = "Hello World!";
-  
+  const messages = [
+    "Hello to the friends from all the world!",
+    "Danke Bitte!",
+    "Hola Amigos de todo lo mundo!",
+    "Se nì mondo esistesse un pò di bene e ognun si considerasse suo fratello ci sarebbero meno pensieri e meno pene ed il mondo ne sarebbe assai più bello."
+  ];
+
   return (
     <Container>
       <Header>
@@ -26,7 +31,9 @@ export default function ChatScreen() {
       </Header>
 
       <MessageContainer>
-        <Message></Message>
+        {messages.map((message) => (
+          <Message text={message} />
+        ))}
       </MessageContainer>
     </Container>
   );
@@ -69,4 +76,5 @@ const MessageContainer = styled.div`
   background-color: #e4ded9;
   width: 100%;
   min-height: 80vh;
+  padding: 30px;
 `;

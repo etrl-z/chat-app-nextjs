@@ -36,7 +36,7 @@ export default function Chat({ id, users }) {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 10px 100px 10px 10px;
   cursor: pointer;
   word-break: break-word;
 
