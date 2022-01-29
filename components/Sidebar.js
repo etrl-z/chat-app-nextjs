@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
@@ -15,11 +14,9 @@ import Chat from "../components/Chat.js";
 export default function Sidebar() {
   const [user] = useAuthState(auth);
   const chatsRef = collection(db, "chats");
-  const userChatRef = query(
-    chatsRef,
-    where("users", "array-contains", user.email)
+  const [chatsSnapshot] = useCollection(
+    query(chatsRef, where("users", "array-contains", user.email))
   );
-  const [chatsSnapshot] = useCollection(userChatRef);
 
   const createChat = () => {
     const input = prompt("Insert an e-Mail address!");
@@ -60,12 +57,11 @@ export default function Sidebar() {
       </Header>
 
       <Search>
-        <SearchIcon />
+        <SearchIconStyled />
         <SearchInput placeholder="Search for chats..." />
       </Search>
       <SearchButton onClick={createChat}>START NEW CHAT</SearchButton>
 
-      {/* List of chats */}
       {chatsSnapshot?.docs.map((chat) => (
         <Chat key={chat.id} id={chat.id} users={chat.data().users} />
       ))}
@@ -97,6 +93,9 @@ const Search = styled.div`
   display: flex;
   align-items: center;
   height: 50px;
+`;
+const SearchIconStyled = styled(SearchIcon)`
+  margin-left: 10px;
 `;
 const SearchInput = styled.input`
   border: 0;

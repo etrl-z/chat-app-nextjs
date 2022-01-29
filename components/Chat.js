@@ -1,13 +1,21 @@
 import styled from "styled-components";
 import { Avatar } from "@material-ui/core";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useRouter } from "next/router";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection, query, where } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
 
 export default function Chat({ id, users }) {
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(users, user);
+  const usersRef = collection(db, "users");
+  const [recipientSnapshot] = useCollection(
+    query(usersRef, where("email", "==", recipientEmail))
+  );
+  const recipient = recipientSnapshot?.docs?.[0]?.data();
+
   const router = useRouter();
   const enterChat = () => {
     router.push(`/chat/${id}`);
@@ -15,7 +23,11 @@ export default function Chat({ id, users }) {
 
   return (
     <Container onClick={enterChat}>
-      <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
+      {recipient ? (
+        <UserAvatar src={recipient.photoURL}></UserAvatar>
+      ) : (
+        <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
+      )}
       <p>{recipientEmail}</p>
     </Container>
   );
@@ -24,7 +36,7 @@ export default function Chat({ id, users }) {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 15 px;
+  padding: 10px;
   cursor: pointer;
   word-break: break-word;
 
@@ -33,6 +45,5 @@ const Container = styled.div`
   }
 `;
 const UserAvatar = styled(Avatar)`
-  margin: 5px;
-  margin-right: 15px;
+  margin-right: 10px;
 `;

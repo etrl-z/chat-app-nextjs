@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Sidebar from '../components/Sidebar.js'
 
@@ -27,6 +26,3 @@ export default function Home() {
 // firebase
 // email validator
 // react-firebase-hooks
-
-// get url image from recipients
-// build chat screen
