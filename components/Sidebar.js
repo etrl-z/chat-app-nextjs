@@ -8,8 +8,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
 import { collection, doc, setDoc, query, where } from "firebase/firestore";
-import { useRouter } from "next/router";
-
 import Chat from "../components/Chat.js";
 
 export default function Sidebar() {
@@ -43,10 +41,8 @@ export default function Sidebar() {
     );
   };
 
-  const router = useRouter();
   const signOut = () => {
     auth.signOut();
-    //router.push(router.pathname.split('/')[0]);
   }
 
   return (
@@ -83,7 +79,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 80px;
+  height: 10vh;
   padding: 10px;
   border-bottom: 2px solid whitesmoke;
   background-color: white;
