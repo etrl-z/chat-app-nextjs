@@ -12,6 +12,7 @@ import { auth, db } from "../firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, doc, setDoc, query, where } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
+import React, { useRef } from "react";
 
 export default function ChatScreen() {
   const messages = [
@@ -23,32 +24,30 @@ export default function ChatScreen() {
 
   const router = useRouter();
   const [user] = useAuthState(auth);
-
-  const chatsRef = collection(db, "chats");
   const [chatsSnapshot] = useCollection(
-    query(chatsRef, where("users", "array-contains", user.email))
+    query(collection(db, "chats"), where("users", "array-contains", user.email))
   );
   const chatSnap = chatsSnapshot?.docs.find(
     (chat) => chat.id == router.query.id
   );
   const chatEmail = getRecipientEmail(chatSnap?.data().users, user);
+  const chatMessages = collection(db, `chats/${chatSnap?.id}/messages`);
 
-  // const sendMessage = () => {
-  //   //add chat into DB collection
-  //   setDoc(
-  //     doc(chatsRef),
-  //     {
-  //       messages: [
-  //         {
-  //           message: "TEST MESSAGE",
-  //           sender: user.email,
-  //           sentAtTime: new Date().getHours() + ":" + new Date().getMinutes(),
-  //         },
-  //       ],
-  //     },
-  //     { merge: true }
-  //   );
-  // };
+  const textInputField = useRef();
+  const sendMessage = () => {
+    const messageTxt = textInputField.current.value; //read input field value
+    if (messageTxt === "") return;
+    setDoc(
+      doc(chatMessages),
+      {
+        message: messageTxt,
+        sender: user.email,
+        sentAtTime: new Date().getHours() + ":" + new Date().getMinutes(),
+      },
+      { merge: true }
+    );
+    textInputField.current.value = null; //resets input field
+  };
 
   return (
     <Container>
@@ -83,8 +82,8 @@ export default function ChatScreen() {
             <AttachFileIcon />
           </IconButton>
         </IconsContainer>
-        <InputTextField placeholder="Write a message..." />
-        <IconButton>
+        <InputTextField ref={textInputField} placeholder="Write a message..." />
+        <IconButton onClick={sendMessage}>
           <SendIcon />
         </IconButton>
       </InputBar>
