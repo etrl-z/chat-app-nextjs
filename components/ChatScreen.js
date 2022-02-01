@@ -14,13 +14,13 @@ import { collection, doc, setDoc, query, where } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
 import React, { useRef } from "react";
 
-export default function ChatScreen() {
-  const messages = [
-    "Hello to the friends from all the world!",
-    "Danke Bitte!",
-    "Hola Amigos de todo lo mundo!",
-    "Se nì mondo esistesse un pò di bene e ognun si considerasse suo fratello ci sarebbero meno pensieri e meno pene ed il mondo ne sarebbe assai più bello.",
-  ];
+export default function ChatScreen({ chat, messages }) {
+  // const messages = [
+  //   "Hello to the friends from all the world!",
+  //   "Danke Bitte!",
+  //   "Hola Amigos de todo lo mundo!",
+  //   "Se nì mondo esistesse un pò di bene e ognun si considerasse suo fratello ci sarebbero meno pensieri e meno pene ed il mondo ne sarebbe assai più bello.",
+  // ];
 
   const router = useRouter();
   const [user] = useAuthState(auth);
@@ -30,8 +30,20 @@ export default function ChatScreen() {
   const chatSnap = chatsSnapshot?.docs.find(
     (chat) => chat.id == router.query.id
   );
-  const chatEmail = getRecipientEmail(chatSnap?.data().users, user);
+  const chatEmail = getRecipientEmail(chat.users, user);
   const chatMessages = collection(db, `chats/${chatSnap?.id}/messages`);
+
+  console.log(messages);
+  const showMessages = () => {
+    return JSON.parse(messages).map((message) => (
+      <Message
+        key={message.id}
+        user={message.sender}
+        text={message.message}
+        sentAtTime={message.sentAtTime}
+      />
+    ));
+  };
 
   const textInputField = useRef();
   const sendMessage = () => {
@@ -67,11 +79,7 @@ export default function ChatScreen() {
         </IconsContainer>
       </Header>
 
-      <MessageContainer>
-        {messages.map((message) => (
-          <Message text={message} />
-        ))}
-      </MessageContainer>
+      <MessageContainer>{showMessages()}</MessageContainer>
 
       <InputBar>
         <IconsContainer>

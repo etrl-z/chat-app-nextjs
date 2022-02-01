@@ -6,18 +6,12 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { collection, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import getRecipientEmail from "../../utils/getRecipientEmail.js";
 
-export default function Chat() {
-
-  const router = useRouter();
+export default function Chat({ chat, messages }) {
   const [user] = useAuthState(auth);
-  const [chatsSnapshot] = useCollection(
-    query(collection(db, "chats"), where("users", "array-contains", user.email))
-  );
-  const chatSnap = chatsSnapshot?.docs.find((chat) => chat.id == router.query.id);
-  const chatEmail = getRecipientEmail(chatSnap?.data().users, user);
+  const chatEmail = getRecipientEmail(chat.users, user);
 
   return (
     <Container>
@@ -28,15 +22,34 @@ export default function Chat() {
       <Sidebar />
 
       <ChatContainer>
-        <ChatScreen />
+        <ChatScreen chat={chat} messages={messages} />
       </ChatContainer>
     </Container>
   );
 }
 
 export async function getServerSideProps(context) {
+  const chatById = doc(db, `chats/${context.query.id}`);
+
+  //Retrieve Chats
+  const chatRes = await getDoc(chatById);
+  const chat = {
+    id: chatRes.id,
+    users: chatRes.data().users,
+  };
+
+  //Retrieve Messages
+  const messagesRes = await getDocs(collection(chatById, "messages"));
+  const messages = messagesRes.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
   return {
-    props: {},
+    props: {
+      chat: chat,
+      messages: JSON.stringify(messages),
+    },
   };
 }
 
