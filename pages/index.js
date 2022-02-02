@@ -1,5 +1,4 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import styled from "styled-components";
 import Sidebar from "../components/Sidebar.js";
 
@@ -51,3 +50,19 @@ const Logo = styled.img`
 // firebase
 // email validator
 // react-firebase-hooks
+
+
+//todo: 
+ 
+  // - enter send
+  // - last seen
+  // - router Navigation
+  // - check unavailable datas
+  // - delete chats
+  // - new chat input
+
+  // - responsive 
+  // - searchbar
+  // - scrolling separately
+  // - hide sidebar
+

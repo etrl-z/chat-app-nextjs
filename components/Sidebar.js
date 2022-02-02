@@ -79,7 +79,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 10vh;
+  height: 80px;
   padding: 10px;
   border-bottom: 2px solid whitesmoke;
   background-color: white;
@@ -96,16 +96,18 @@ const Search = styled.div`
   display: flex;
   align-items: center;
   height: 50px;
-  padding: 0 10px;
+  padding: 0 20px;
 `;
 const SearchInput = styled.input`
   border: 0;
   outline-width: 0;
-  height: 30px;
+  height: 50px;
   width: 100%;
+  margin-left: 10px;
 `;
 const SearchButton = styled(Button)`
   width: 100%;
+  height: 50px;
   &&& {
     border-top: 2px solid whitesmoke;
     border-bottom: 2px solid whitesmoke;

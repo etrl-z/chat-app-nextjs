@@ -2,10 +2,8 @@ import Head from "next/head";
 import styled from "styled-components";
 import Sidebar from "../../components/Sidebar.js";
 import ChatScreen from "../../components/ChatScreen";
-import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebase";
-import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import getRecipientEmail from "../../utils/getRecipientEmail.js";
 

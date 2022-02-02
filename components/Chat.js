@@ -36,14 +36,19 @@ export default function Chat({ id, users }) {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px 100px 10px 10px;
+  padding: 10px 200px 10px 10px;
   cursor: pointer;
   word-break: break-word;
 
   :hover {
     background-color: #e9eaeb;
   }
+
+  > p {
+    min-width: 50px;
+    word-break: break-word;
+  }
 `;
 const UserAvatar = styled(Avatar)`
-  margin-right: 10px;
+  margin-right: 15px;
 `;

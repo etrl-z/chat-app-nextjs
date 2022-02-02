@@ -15,13 +15,6 @@ import getRecipientEmail from "../utils/getRecipientEmail.js";
 import React, { useRef } from "react";
 
 export default function ChatScreen({ chat, messages }) {
-  // const messages = [
-  //   "Hello to the friends from all the world!",
-  //   "Danke Bitte!",
-  //   "Hola Amigos de todo lo mundo!",
-  //   "Se nì mondo esistesse un pò di bene e ognun si considerasse suo fratello ci sarebbero meno pensieri e meno pene ed il mondo ne sarebbe assai più bello.",
-  // ];
-
   const router = useRouter();
   const [user] = useAuthState(auth);
   const [chatsSnapshot] = useCollection(
@@ -105,7 +98,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  height: 10vh;
+  height: 80px;
   padding: 10px;
   border-bottom: 2px solid whitesmoke;
   background-color: white;
@@ -137,13 +130,14 @@ const IconsContainer = styled.div`
 const MessageContainer = styled.div`
   background-color: #e4ded9;
   width: 100%;
-  min-height: 80vh;
+  height: 550px;
   padding: 30px;
 `;
 const InputBar = styled.div`
+  position: sticky;
   background-color: #f0f2f5;
   width: 100%;
-  height: 10vh;
+  height: 80px;
   display: flex;
   align-items: center;
   padding: 10px;
@@ -151,7 +145,8 @@ const InputBar = styled.div`
 const InputTextField = styled.input`
   border: 0;
   outline-width: 0;
-  height: 6vh;
+  font-size: 15px;
+  height: 50px;
   width: 100%;
   padding: 0 15px;
   margin: 0 15px;
