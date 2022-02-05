@@ -8,16 +8,16 @@ import Loading from "../components/Loading";
 
 function MyApp({ Component, pageProps }) {
   const [user, loading] = useAuthState(auth);
-  const usersRef = collection(db, "users");
 
   useEffect(() => {
     if (user) {
       setDoc(
-        doc(usersRef, user.uid),
+        doc(collection(db, "users"), user.uid),
         {
+          name: user.displayName,
           email: user.email,
-          lastSeen: Timestamp.fromDate(new Date()),
           photoURL: user.photoURL,
+          lastSeen: Timestamp.fromDate(new Date())
         },
         { merge: true }
       );

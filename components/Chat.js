@@ -23,11 +23,16 @@ export default function Chat({ id, users }) {
   return (
     <Container onClick={enterChat}>
       {recipient ? (
-        <UserAvatar src={recipient.photoURL}></UserAvatar>
+        <>
+          <UserAvatar src={recipient.photoURL}></UserAvatar>
+          <p>{recipient.name}</p>
+        </>
       ) : (
+        <>
         <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
+        <p>{recipientEmail}</p>
+        </>
       )}
-      <p>{recipientEmail}</p>
     </Container>
   );
 }

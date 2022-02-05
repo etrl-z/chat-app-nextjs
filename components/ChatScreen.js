@@ -6,7 +6,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import SendIcon from "@material-ui/icons/Send";
 import Message from "./Message.js";
-import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
@@ -16,21 +15,21 @@ import React, { useRef } from "react";
 import { Timeago } from "timeago-react";
 
 export default function ChatScreen({ chat, messages }) {
-  const router = useRouter();
   const [user] = useAuthState(auth);
   const [chatsSnapshot] = useCollection(
     query(collection(db, "chats"), where("users", "array-contains", user.email))
   );
   const chatSnap = chatsSnapshot?.docs.find(
-    (chat) => chat.id == router.query.id
+    (chatById) => chatById.id === chat.id
   );
-  const chatEmail = getRecipientEmail(chat.users, user);
-  const chatMessages = collection(db, `chats/${chatSnap?.id}/messages`);
 
+  const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(
-    query(collection(db, "users"), where("email", "==", chatEmail))
+    query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
+
+  const chatMessages = collection(db, `chats/${chatSnap?.id}/messages`);
 
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
@@ -65,10 +64,10 @@ export default function ChatScreen({ chat, messages }) {
         {recipient ? (
           <UserAvatar src={recipient.photoURL}></UserAvatar>
         ) : (
-          <UserAvatar>{chatEmail[0].toUpperCase()}</UserAvatar>
+          <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
         )}
         <HeaderInfo>
-          <h3>{chatEmail}</h3>
+          <h3>{recipient ? recipient.name : recipientEmail}</h3>
           <p>Last seen: {recipient ? "<Timeago />" : "Unavailable"}</p>
         </HeaderInfo>
         <IconsContainer>
@@ -155,6 +154,7 @@ const MessageContainer = styled.div`
   background-color: #e4ded9;
   padding: 10px 30px;
   min-width: 400px;
+  height: 100vh;
 `;
 const EndOfMessage = styled.div``;
 const InputBar = styled.div`

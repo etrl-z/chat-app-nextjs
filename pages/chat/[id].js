@@ -4,17 +4,30 @@ import Sidebar from "../../components/Sidebar.js";
 import ChatScreen from "../../components/ChatScreen";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import getRecipientEmail from "../../utils/getRecipientEmail.js";
 
 export default function Chat({ chat, messages }) {
   const [user] = useAuthState(auth);
-  const chatEmail = getRecipientEmail(chat.users, user);
+  const recipientEmail = getRecipientEmail(chat.users, user);
+
+  const [recipientSnapshot] = useCollection(
+    query(collection(db, "users"), where("email", "==", recipientEmail))
+  );
+  const recipient = recipientSnapshot?.docs?.[0]?.data();
 
   return (
     <Container>
       <Head>
-        <title>Chat with {chatEmail}</title>
+        <title>Chat with {recipient ? recipient.name : recipientEmail}</title>
       </Head>
 
       <Sidebar />
