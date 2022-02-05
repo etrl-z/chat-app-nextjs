@@ -10,9 +10,8 @@ import getRecipientEmail from "../utils/getRecipientEmail.js";
 export default function Chat({ id, users }) {
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(users, user);
-  const usersRef = collection(db, "users");
   const [recipientSnapshot] = useCollection(
-    query(usersRef, where("email", "==", recipientEmail))
+    query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
 
@@ -36,7 +35,7 @@ export default function Chat({ id, users }) {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px 200px 10px 10px;
+  padding: 10px;
   cursor: pointer;
   word-break: break-word;
 

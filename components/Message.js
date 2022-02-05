@@ -17,7 +17,6 @@ export default function Message({ user, text, sentAtTime }) {
 }
 
 const Container = styled.div``;
-
 const MessageBody = styled.p`
   padding: 15px 20px;
   border-radius: 10px;
@@ -25,6 +24,7 @@ const MessageBody = styled.p`
   width: fit-content;
   max-width: 50%;
   min-width: 50px;
+  word-break: break-word;
 `;
 const Timestamp = styled.div`
   color: grey;

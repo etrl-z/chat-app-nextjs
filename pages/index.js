@@ -50,19 +50,17 @@ const Logo = styled.img`
 // firebase
 // email validator
 // react-firebase-hooks
-
+// timeago-react
 
 //todo: 
  
   // - enter send
+  // - searchbar
   // - last seen
+
   // - router Navigation
   // - check unavailable datas
   // - delete chats
   // - new chat input
 
-  // - responsive 
-  // - searchbar
-  // - scrolling separately
-  // - hide sidebar
 

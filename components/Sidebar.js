@@ -43,7 +43,7 @@ export default function Sidebar() {
 
   const signOut = () => {
     auth.signOut();
-  }
+  };
 
   return (
     <Container>
@@ -72,9 +72,24 @@ export default function Sidebar() {
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  flex: 0.45;
+  min-width: 300px;
+  max-width: 500px;
+  border-right: 2px solid whitesmoke;
+  height: 100vh;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; //IE, Edge
+  scrollbar-width: none;  //Firefox
+`;
 const Header = styled.div`
   position: sticky;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

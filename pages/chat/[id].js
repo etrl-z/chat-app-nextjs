@@ -53,6 +53,14 @@ export async function getServerSideProps(context) {
 
 const Container = styled.div`
   display: flex;
+  overflow: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; //IE, Edge
+  scrollbar-width: none; //Firefox
 `;
 const ChatContainer = styled.div`
   flex: 1;
