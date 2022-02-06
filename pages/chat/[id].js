@@ -17,8 +17,6 @@ import {
 import getRecipientEmail from "../../utils/getRecipientEmail.js";
 
 export default function Chat({ chat, messages }) {
-  console.log(chat);
-  console.log(messages);
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(

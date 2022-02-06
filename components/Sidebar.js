@@ -7,7 +7,7 @@ import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
-import { collection, doc, setDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, query, where } from "firebase/firestore";
 import Chat from "../components/Chat.js";
 
 export default function Sidebar() {
@@ -27,7 +27,7 @@ export default function Sidebar() {
       input !== user.email
     ) {
       //add chat into DB collection
-      setDoc(doc(chatsRef), {
+      addDoc(collection(db, "chats"), {
         users: [user.email, input],
       });
     }
