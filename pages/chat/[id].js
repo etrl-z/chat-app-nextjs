@@ -12,13 +12,15 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 import getRecipientEmail from "../../utils/getRecipientEmail.js";
 
 export default function Chat({ chat, messages }) {
+  console.log(chat);
+  console.log(messages);
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(chat.users, user);
-
   const [recipientSnapshot] = useCollection(
     query(collection(db, "users"), where("email", "==", recipientEmail))
   );
@@ -40,21 +42,22 @@ export default function Chat({ chat, messages }) {
 }
 
 export async function getServerSideProps(context) {
-  const chatById = doc(db, `chats/${context.query.id}`);
-
+  const chatById = doc(db, "chats", context.query.id);
   //Retrieve Chats
   const chatRes = await getDoc(chatById);
   const chat = {
     id: chatRes.id,
     users: chatRes.data().users,
   };
-
   //Retrieve Messages
-  const messagesRes = await getDocs(collection(chatById, "messages"));
-  const messages = messagesRes.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  const queryOrderedMessages = query(collection(chatById, "messages"), orderBy("sentAtTime", "asc"));
+  const messagesRes = await getDocs(queryOrderedMessages);
+  const messages = messagesRes.docs
+    .map((doc) => ({
+      id: doc.id,
+      timestamp: doc.sentAtTime?.toDate().getTime(),
+      ...doc.data(),
+    }));
 
   return {
     props: {

@@ -9,27 +9,32 @@ import Message from "./Message.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { collection, doc, setDoc, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  query,
+  where,
+  Timestamp,
+} from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
-import React, { useRef } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { Timeago } from "timeago-react";
 
 export default function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
-  const [chatsSnapshot] = useCollection(
-    query(collection(db, "chats"), where("users", "array-contains", user.email))
-  );
-  const chatSnap = chatsSnapshot?.docs.find(
-    (chatById) => chatById.id === chat.id
-  );
+  const router = useRouter();
+  const chatId = router.query.id;
 
+  // --------- possibile miglioramento lato server -----------
   const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(
     query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-
-  const chatMessages = collection(db, `chats/${chatSnap?.id}/messages`);
+  // ---------------------------------------------------------
 
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
@@ -37,25 +42,42 @@ export default function ChatScreen({ chat, messages }) {
         key={message.id}
         user={message.sender}
         text={message.message}
-        sentAtTime={message.sentAtTime}
+        sentAtTime={
+          new Date(
+            message.sentAtTime.seconds * 1000 +
+              message.sentAtTime.nanoseconds / 1000000
+          ).getHours() +
+          ":" +
+          new Date(
+            message.sentAtTime.seconds * 1000 +
+              message.sentAtTime.nanoseconds / 1000000
+          ).getMinutes()
+        }
       />
     ));
   };
 
-  const textInputField = useRef();
-  const sendMessage = () => {
-    const messageTxt = textInputField.current.value; //read input field value
-    if (messageTxt === "") return;
+  const [input, setInput] = useState();
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    //Update Last Seen on current user
     setDoc(
-      doc(chatMessages),
+      doc(db, "users", user.uid),
       {
-        message: messageTxt,
-        sender: user.email,
-        sentAtTime: new Date().getHours() + ":" + new Date().getMinutes(),
+        lastSeen: Timestamp.fromDate(new Date()),
       },
       { merge: true }
     );
-    textInputField.current.value = null; //resets input field
+    //Store Message
+    const messageData = {
+      message: input,
+      sender: user.email,
+      sentAtTime: Timestamp.fromDate(new Date()),
+    };
+    addDoc(collection(db, "chats", chatId, "messages"), messageData);
+    //Resets input field
+    setInput("");
   };
 
   return (
@@ -67,8 +89,19 @@ export default function ChatScreen({ chat, messages }) {
           <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
         )}
         <HeaderInfo>
-          <h3>{recipient ? recipient.name : recipientEmail}</h3>
-          <p>Last seen: {recipient ? "<Timeago />" : "Unavailable"}</p>
+          {recipientSnapshot ? (
+            <h3>{recipient ? recipient.name : recipientEmail}</h3>
+          ) : (
+            <h3> </h3>
+          )}
+          {recipientSnapshot ? (
+            <p>
+              Last active:{" "}
+              {recipient?.lastSeen?.toDate() ? "<Timeago />" : "Unavailable"}
+            </p>
+          ) : (
+            <p>Loading Last active...</p>
+          )}
         </HeaderInfo>
         <IconsContainer>
           <IconButton>
@@ -94,7 +127,11 @@ export default function ChatScreen({ chat, messages }) {
             <AttachFileIcon />
           </IconButton>
         </IconsContainer>
-        <InputTextField ref={textInputField} placeholder="Write a message..." />
+        <InputTextField
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Write a message..."
+        />
         <IconButton onClick={sendMessage}>
           <SendIcon />
         </IconButton>

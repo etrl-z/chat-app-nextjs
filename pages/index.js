@@ -51,15 +51,13 @@ const Logo = styled.img`
 // email validator
 // react-firebase-hooks
 // timeago-react
+// moment
 
 //todo: 
  
-  // - enter send
-  // - searchbar
-  // - last seen
-
   // - router Navigation
-  // - check unavailable datas
+
+  // - searchbar
   // - delete chats
   // - new chat input
 

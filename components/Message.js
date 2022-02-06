@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import moment from "moment";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
 
@@ -10,7 +11,9 @@ export default function Message({ user, text, sentAtTime }) {
     <Container>
       <TypeOfBody>
         {text}
-        <Timestamp>{sentAtTime}</Timestamp>
+        <Timestamp>
+          {/* {sentAtTime ? moment(sentAtTime).format("LT") : "..."} */}{sentAtTime}
+        </Timestamp>
       </TypeOfBody>
     </Container>
   );
