@@ -19,7 +19,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { Timeago } from "timeago-react";
 
@@ -28,13 +28,11 @@ export default function ChatScreen({ chat, messages }) {
   const router = useRouter();
   const chatId = router.query.id;
 
-  // --------- possibile miglioramento lato server -----------
   const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(
     query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-  // ---------------------------------------------------------
 
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
@@ -58,7 +56,6 @@ export default function ChatScreen({ chat, messages }) {
   };
 
   const [input, setInput] = useState();
-
   const sendMessage = (e) => {
     e.preventDefault();
     //Update Last Seen on current user
@@ -78,6 +75,15 @@ export default function ChatScreen({ chat, messages }) {
     addDoc(collection(db, "chats", chatId, "messages"), messageData);
     //Resets input field
     setInput("");
+    //scrollToBottom();
+  };
+
+  const endOfMessage = useRef();
+  const scrollToBottom = () => {
+    endOfMessage.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
@@ -115,7 +121,7 @@ export default function ChatScreen({ chat, messages }) {
 
       <MessageContainer>
         {showMessages()}
-        <EndOfMessage />
+        <EndOfMessage ref={endOfMessage} />
       </MessageContainer>
 
       <InputBar>
@@ -141,23 +147,15 @@ export default function ChatScreen({ chat, messages }) {
 }
 
 const Container = styled.div`
+  flex: 60%;
   min-width: 500px;
-  height: 100vh;
-  overflow-y: scroll;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
-  -ms-overflow-style: none; //IE, Edge
-  scrollbar-width: none; //Firefox
+  max-width: 2500px;
 `;
 const Header = styled.div`
   position: sticky;
   top: 0;
   display: flex;
   align-items: center;
-  width: 100%;
   height: 80px;
   padding: 10px;
   border-bottom: 2px solid whitesmoke;
@@ -189,11 +187,21 @@ const IconsContainer = styled.div`
 `;
 const MessageContainer = styled.div`
   background-color: #e4ded9;
-  padding: 10px 30px;
-  min-width: 400px;
-  height: 100vh;
+  padding: 0 30px;
+  height: 80vh;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; //IE, Edge
+  scrollbar-width: none; //Firefox
 `;
-const EndOfMessage = styled.div``;
+const EndOfMessage = styled.div`
+  height: 80px;
+  bottom: 80px;
+`;
 const InputBar = styled.div`
   position: sticky;
   bottom: 0;

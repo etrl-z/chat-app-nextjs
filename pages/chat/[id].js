@@ -32,9 +32,7 @@ export default function Chat({ chat, messages }) {
 
       <Sidebar />
 
-      <ChatContainer>
-        <ChatScreen chat={chat} messages={messages} />
-      </ChatContainer>
+      <ChatScreen chat={chat} messages={messages} />
     </Container>
   );
 }
@@ -67,15 +65,6 @@ export async function getServerSideProps(context) {
 
 const Container = styled.div`
   display: flex;
-  overflow: scroll;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
-  -ms-overflow-style: none; //IE, Edge
-  scrollbar-width: none; //Firefox
-`;
-const ChatContainer = styled.div`
-  flex: 1;
+  overflow: hidden;
+  height: 100vh;
 `;

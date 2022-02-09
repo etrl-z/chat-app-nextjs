@@ -23,9 +23,13 @@ export default function Home() {
 
 const Container = styled.div`
   display: flex;
+  overflow: hidden;
+  height: 100vh;
 `;
 const ChatScreenPlaceHold = styled.div`
-  flex: 1;
+  flex: 60%;
+  min-width: 500px;
+  max-width: 2500px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,7 +43,7 @@ const ChatScreenPlaceHold = styled.div`
 const Logo = styled.img`
   height: 200px;
   width: 200px;
-  margin-bottom: 20px;
+  margin: 0 100px 20px;
 `;
 
 /*----------------------------------------------------------------*/
@@ -52,13 +56,3 @@ const Logo = styled.img`
 // react-firebase-hooks
 // timeago-react
 // moment
-
-//todo: 
- 
-  // - router Navigation
-
-  // - searchbar
-  // - delete chats
-  // - new chat input
-
-

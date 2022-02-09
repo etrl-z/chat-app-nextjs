@@ -61,27 +61,30 @@ export default function Sidebar() {
         </IconsContainer>
       </Header>
 
-      <Search>
-        <SearchIcon />
-        <SearchInput placeholder="Search for chats..." />
-      </Search>
-      <SearchButton onClick={createChat}>START NEW CHAT</SearchButton>
+      <ControlsPanel>
+        <Search>
+          <SearchIcon />
+          <SearchInput placeholder="Search for chats..." />
+        </Search>
+        <CreateButton onClick={createChat}>START NEW CHAT</CreateButton>
+      </ControlsPanel>
 
-      {chatsSnapshot?.docs.map((chat) => (
-        <Chat key={chat.id} id={chat.id} users={chat.data().users} />
-      ))}
+      <ChatsContainer>
+        {chatsSnapshot?.docs.map((chat) => (
+          <Chat key={chat.id} id={chat.id} users={chat.data().users} />
+        ))}
+      </ChatsContainer>
     </Container>
   );
 }
 
 const Container = styled.div`
-  flex: 0.45;
+  flex: 40%;
   min-width: 300px;
   max-width: 500px;
   border-right: 2px solid whitesmoke;
-  height: 100vh;
   overflow-y: scroll;
-
+  
   ::-webkit-scrollbar {
     display: none;
   }
@@ -91,12 +94,11 @@ const Container = styled.div`
 `;
 const Header = styled.div`
   position: sticky;
+  height: 80px;
   top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  height: 80px;
   padding: 10px;
   border-bottom: 2px solid whitesmoke;
   background-color: white;
@@ -114,6 +116,12 @@ const UsrAvatar = styled(Avatar)`
   }
 `;
 const IconsContainer = styled.div``;
+const ControlsPanel = styled.div`
+  position: sticky;
+  top: 80px;
+  background-color: white;
+  z-index: 1;
+`;
 const Search = styled.div`
   display: flex;
   align-items: center;
@@ -127,7 +135,7 @@ const SearchInput = styled.input`
   width: 100%;
   margin-left: 10px;
 `;
-const SearchButton = styled(Button)`
+const CreateButton = styled(Button)`
   width: 100%;
   height: 50px;
   &&& {
@@ -135,3 +143,4 @@ const SearchButton = styled(Button)`
     border-bottom: 2px solid whitesmoke;
   }
 `;
+const ChatsContainer = styled.div``;
