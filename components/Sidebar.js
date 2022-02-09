@@ -79,7 +79,7 @@ export default function Sidebar() {
 }
 
 const Container = styled.div`
-  flex: 40%;
+  flex: 30%;
   min-width: 300px;
   max-width: 500px;
   border-right: 2px solid whitesmoke;

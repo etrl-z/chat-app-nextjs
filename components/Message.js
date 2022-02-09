@@ -6,13 +6,14 @@ import { auth } from "../firebase";
 export default function Message({ user, text, sentAtTime }) {
   const [userLoggedIn] = useAuthState(auth);
   const TypeOfBody = user === userLoggedIn.email ? Sent : Received;
+  console.log(sentAtTime);
 
   return (
     <Container>
       <TypeOfBody>
         {text}
         <Timestamp>
-          {/* {sentAtTime ? moment(sentAtTime).format("LT") : "..."} */}{sentAtTime}
+          {sentAtTime ? moment().format("LT") : "..."}
         </Timestamp>
       </TypeOfBody>
     </Container>
@@ -23,9 +24,9 @@ const Container = styled.div``;
 const MessageBody = styled.p`
   padding: 15px 20px;
   border-radius: 10px;
-  margin: 10px 0;
+  margin: 15px 0 0;
   width: fit-content;
-  max-width: 50%;
+  max-width: 60%;
   min-width: 50px;
   word-break: break-word;
 `;

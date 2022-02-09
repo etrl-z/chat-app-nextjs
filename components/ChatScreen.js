@@ -21,7 +21,7 @@ import {
 import getRecipientEmail from "../utils/getRecipientEmail.js";
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/router";
-import { Timeago } from "timeago-react";
+import moment from "moment";
 
 export default function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
@@ -33,24 +33,13 @@ export default function ChatScreen({ chat, messages }) {
     query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
       <Message
         key={message.id}
         user={message.sender}
         text={message.message}
-        sentAtTime={
-          new Date(
-            message.sentAtTime.seconds * 1000 +
-              message.sentAtTime.nanoseconds / 1000000
-          ).getHours() +
-          ":" +
-          new Date(
-            message.sentAtTime.seconds * 1000 +
-              message.sentAtTime.nanoseconds / 1000000
-          ).getMinutes()
-        }
+        sentAtTime={message.sentAtTime}
       />
     ));
   };
@@ -75,19 +64,18 @@ export default function ChatScreen({ chat, messages }) {
     addDoc(collection(db, "chats", chatId, "messages"), messageData);
     //Resets input field
     setInput("");
-    //scrollToBottom();
+    scrollToBottom();
   };
 
   const endOfMessage = useRef();
   const scrollToBottom = () => {
     endOfMessage.current.scrollIntoView({
       behavior: "smooth",
-      block: "start",
     });
   };
 
   return (
-    <Container>
+    <Container onLoad={scrollToBottom}>
       <Header>
         {recipient ? (
           <UserAvatar src={recipient.photoURL}></UserAvatar>
@@ -103,7 +91,9 @@ export default function ChatScreen({ chat, messages }) {
           {recipientSnapshot ? (
             <p>
               Last active:{" "}
-              {recipient?.lastSeen?.toDate() ? "<Timeago />" : "Unavailable"}
+              {recipient?.lastSeen?.toDate()
+                ? moment(recipient?.lastSeen?.toDate()).startOf("day").fromNow()
+                : "Unavailable"}
             </p>
           ) : (
             <p>Loading Last active...</p>
@@ -147,7 +137,7 @@ export default function ChatScreen({ chat, messages }) {
 }
 
 const Container = styled.div`
-  flex: 60%;
+  flex: 70%;
   min-width: 500px;
   max-width: 2500px;
 `;
@@ -186,9 +176,10 @@ const IconsContainer = styled.div`
   display: flex;
 `;
 const MessageContainer = styled.div`
+  position: relative;
   background-color: #e4ded9;
-  padding: 0 30px;
-  height: 80vh;
+  padding: 0 60px;
+  height: 77.5vh;
   overflow-y: scroll;
 
   ::-webkit-scrollbar {
@@ -199,8 +190,7 @@ const MessageContainer = styled.div`
   scrollbar-width: none; //Firefox
 `;
 const EndOfMessage = styled.div`
-  height: 80px;
-  bottom: 80px;
+  height: 30px;
 `;
 const InputBar = styled.div`
   position: sticky;
