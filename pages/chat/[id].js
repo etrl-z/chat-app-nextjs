@@ -51,7 +51,7 @@ export async function getServerSideProps(context) {
   const messages = messagesRes.docs
     .map((doc) => ({
       id: doc.id,
-      timestamp: doc.sentAtTime?.toDate().getTime(),
+      timestamp: doc.sentAtTime,
       ...doc.data(),
     }));
 

@@ -15,7 +15,8 @@ export default function login() {
         <title>Login</title>
       </Head>
       <LoginContainer>
-        <Logo src="https://upload.wikimedia.org/wikipedia/commons/7/75/Whatsapp_logo_svg.png"></Logo>
+        {/* <Logo src="https://upload.wikimedia.org/wikipedia/commons/7/75/Whatsapp_logo_svg.png"></Logo> */}
+        <Logo src="https://upload.wikimedia.org/wikipedia/commons/8/85/Circle-icons-chat.svg"></Logo>
         <Button onClick={signIn} variant="outlined">
           SIGN IN WITH GOOGLE
         </Button>

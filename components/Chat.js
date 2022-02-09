@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Avatar, Icon, IconButton } from "@material-ui/core";
+import { Avatar, IconButton } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
@@ -23,24 +23,22 @@ export default function Chat({ id, users }) {
 
   const deleteChat = () => {
     deleteDoc(doc(db, "chats", id));
+    router.push(`/`);
   };
 
   return (
-    <Container onClick={enterChat}>
-      {recipient ? (
-        <ChatInfo>
-          <UserAvatar src={recipient.photoURL}></UserAvatar>
-          <p>{recipient.name}</p>
-        </ChatInfo>
-      ) : (
-        <ChatInfo>
-          <UserAvatar>{recipientEmail[0].toUpperCase()}</UserAvatar>
-          <p>{recipientEmail}</p>
-        </ChatInfo>
-      )}
-      <IconButton onClick={deleteChat}>
-        <DeleteIcon className="delete" />
-      </IconButton>
+    <Container>
+      <ChatInfo onClick={enterChat}>
+        <UserAvatar src={recipient ? recipient.photoURL : ""}>
+          {!recipient ? recipientEmail[0].toUpperCase() : ""}
+        </UserAvatar>
+        <p>{recipient ? recipient.name.length ? recipient.name : recipient.name : recipientEmail}</p>
+      </ChatInfo>
+      <ChatDelete>
+        <IconButton onClick={deleteChat}>
+          <DeleteIcon className="delete" />
+        </IconButton>
+      </ChatDelete>
     </Container>
   );
 }
@@ -48,7 +46,6 @@ export default function Chat({ id, users }) {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 10px;
   cursor: pointer;
   word-break: break-word;
@@ -63,13 +60,14 @@ const Container = styled.div`
 
   > p {
     min-width: 50px;
-    word-break: break-word;
   }
 `;
 const ChatInfo = styled.div`
   display: flex;
   align-items: center;
+  flex: 1;
 `;
+const ChatDelete = styled.div``;
 const UserAvatar = styled(Avatar)`
   margin-right: 15px;
 `;

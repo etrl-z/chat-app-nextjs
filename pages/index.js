@@ -14,7 +14,8 @@ export default function Home() {
       <Sidebar />
 
       <ChatScreenPlaceHold>
-        <Logo src="https://upload.wikimedia.org/wikipedia/commons/7/75/Whatsapp_logo_svg.png"></Logo>
+        {/* <Logo src="https://upload.wikimedia.org/wikipedia/commons/7/75/Whatsapp_logo_svg.png"></Logo> */}
+        <Logo src="https://upload.wikimedia.org/wikipedia/commons/8/85/Circle-icons-chat.svg"></Logo>
         <p>Select a contact to start chatting...</p>
       </ChatScreenPlaceHold>
     </Container>

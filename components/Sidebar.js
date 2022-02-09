@@ -3,12 +3,15 @@ import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
+import AddIcon from "@material-ui/icons/Add";
 import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
 import { collection, addDoc, query, where } from "firebase/firestore";
 import Chat from "../components/Chat.js";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 
 export default function Sidebar() {
   const [user] = useAuthState(auth);
@@ -16,22 +19,24 @@ export default function Sidebar() {
     query(collection(db, "chats"), where("users", "array-contains", user.email))
   );
 
-  const createChat = () => {
-    const input = prompt("Insert an e-Mail address!");
+  const [input, setInput] = useState();
 
+  async function createChat(e) {
     if (!input) return null;
-
     if (
       EmailValidator.validate(input) &&
       !chatAlreadyExists(input) &&
       input !== user.email
     ) {
       //add chat into DB collection
-      addDoc(collection(db, "chats"), {
+      const docRef = await addDoc(collection(db, "chats"), {
         users: [user.email, input],
       });
+      //reset input & open chat
+      setInput("");
+      router.push(`/chat/${docRef.id}`);
     }
-  };
+  }
 
   const chatAlreadyExists = (recipientEmail) => {
     return !!chatsSnapshot?.docs.find(
@@ -40,7 +45,13 @@ export default function Sidebar() {
     );
   };
 
+  const router = useRouter();
+  const navigateHome = () => {
+    router.push(`/`);
+  };
+
   const signOut = () => {
+    router.push(`/`);
     auth.signOut();
   };
 
@@ -53,7 +64,7 @@ export default function Sidebar() {
         </HeaderInfo>
         <IconsContainer>
           <IconButton>
-            <ChatIcon />
+            <ChatIcon onClick={navigateHome} />
           </IconButton>
           <IconButton>
             <MoreVertIcon />
@@ -63,8 +74,12 @@ export default function Sidebar() {
 
       <ControlsPanel>
         <Search>
-          <SearchIcon />
-          <SearchInput placeholder="Search for chats..." />
+          <AddIcon />
+          <SearchInput
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Insert a valid e-mail address..."
+          />
         </Search>
         <CreateButton onClick={createChat}>START NEW CHAT</CreateButton>
       </ControlsPanel>
@@ -84,7 +99,7 @@ const Container = styled.div`
   max-width: 500px;
   border-right: 2px solid whitesmoke;
   overflow-y: scroll;
-  
+
   ::-webkit-scrollbar {
     display: none;
   }

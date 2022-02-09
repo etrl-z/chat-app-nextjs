@@ -27,7 +27,6 @@ export default function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
   const router = useRouter();
   const chatId = router.query.id;
-
   const recipientEmail = getRecipientEmail(chat.users, user);
   const [recipientSnapshot] = useCollection(
     query(collection(db, "users"), where("email", "==", recipientEmail))
@@ -39,7 +38,7 @@ export default function ChatScreen({ chat, messages }) {
         key={message.id}
         user={message.sender}
         text={message.message}
-        sentAtTime={message.sentAtTime}
+        sentAtTime={new Date(message.sentAtTime.seconds * 1000)}
       />
     ));
   };
