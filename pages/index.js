@@ -28,7 +28,7 @@ const Container = styled.div`
   height: 100vh;
 `;
 const ChatScreenPlaceHold = styled.div`
-  flex: 60%;
+  flex: 70%;
   min-width: 500px;
   max-width: 2500px;
   display: flex;

@@ -19,7 +19,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
@@ -32,6 +32,7 @@ export default function ChatScreen({ chat, messages }) {
     query(collection(db, "users"), where("email", "==", recipientEmail))
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
+
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
       <Message
@@ -46,6 +47,7 @@ export default function ChatScreen({ chat, messages }) {
   const [input, setInput] = useState();
   const sendMessage = (e) => {
     e.preventDefault();
+    if (!input) return;
     //Update Last Seen on current user
     setDoc(
       doc(db, "users", user.uid),
@@ -61,10 +63,23 @@ export default function ChatScreen({ chat, messages }) {
       sentAtTime: Timestamp.fromDate(new Date()),
     };
     addDoc(collection(db, "chats", chatId, "messages"), messageData);
-    //Resets input field
     setInput("");
     scrollToBottom();
   };
+
+  //call add function when Enter is pressed
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        event.preventDefault();
+        sendMessage(event);
+      }
+    };
+    document.addEventListener("keydown", listener); //when component is loaded
+    return () => {
+      document.removeEventListener("keydown", listener); //destroys the component
+    };
+  }, [input]);
 
   const endOfMessage = useRef();
   const scrollToBottom = () => {
