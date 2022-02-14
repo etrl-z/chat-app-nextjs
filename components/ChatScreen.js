@@ -33,6 +33,10 @@ export default function ChatScreen({ chat, messages }) {
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
 
+  // const [messagesSnapshot] = useCollection(
+  //   query(collection(db, "chats", chatId, "messages"))
+  // );
+
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
       <Message
@@ -44,9 +48,16 @@ export default function ChatScreen({ chat, messages }) {
     ));
   };
 
+  const endOfMessage = useRef();
+  const scrollToBottom = () => {
+    endOfMessage.current.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
   const [input, setInput] = useState();
+  const refreshData = () => { router.replace(router.asPath) }
   const sendMessage = (e) => {
-    e.preventDefault();
     if (!input) return;
     //Update Last Seen on current user
     setDoc(
@@ -64,7 +75,7 @@ export default function ChatScreen({ chat, messages }) {
     };
     addDoc(collection(db, "chats", chatId, "messages"), messageData);
     setInput("");
-    scrollToBottom();
+    refreshData();
   };
 
   //call add function when Enter is pressed
@@ -80,13 +91,6 @@ export default function ChatScreen({ chat, messages }) {
       document.removeEventListener("keydown", listener); //destroys the component
     };
   }, [input]);
-
-  const endOfMessage = useRef();
-  const scrollToBottom = () => {
-    endOfMessage.current.scrollIntoView({
-      behavior: "smooth",
-    });
-  };
 
   return (
     <Container onLoad={scrollToBottom}>
