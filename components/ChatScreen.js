@@ -224,7 +224,7 @@ const MessageContainer = styled.div`
   scrollbar-width: none; //Firefox
 `;
 const EndOfMessage = styled.div`
-  height: 30px;
+  height: 120px;
 `;
 const InputBar = styled.div`
   position: sticky;
