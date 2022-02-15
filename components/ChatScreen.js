@@ -33,9 +33,7 @@ export default function ChatScreen({ chat, messages }) {
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
 
-  // const [messagesSnapshot] = useCollection(
-  //   query(collection(db, "chats", chatId, "messages"))
-  // );
+  const [input, setInput] = useState();
 
   const showMessages = () => {
     return JSON.parse(messages).map((message) => (
@@ -55,35 +53,33 @@ export default function ChatScreen({ chat, messages }) {
     });
   };
 
-  const [input, setInput] = useState();
-  const refreshData = () => { router.replace(router.asPath) }
-  const sendMessage = (e) => {
+  function sendMessage() {
     if (!input) return;
     //Update Last Seen on current user
+    const usersDocRef = doc(db, "users", user.uid);
     setDoc(
-      doc(db, "users", user.uid),
+      usersDocRef,
       {
         lastSeen: Timestamp.fromDate(new Date()),
       },
       { merge: true }
     );
     //Store Message
-    const messageData = {
+    const messagesColRef = collection(db, "chats", chatId, "messages");
+    addDoc(messagesColRef, {
       message: input,
       sender: user.email,
       sentAtTime: Timestamp.fromDate(new Date()),
-    };
-    addDoc(collection(db, "chats", chatId, "messages"), messageData);
+    });
     setInput("");
-    refreshData();
-  };
+  }
 
-  //call add function when Enter is pressed
+  //call send function when Enter is pressed
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
         event.preventDefault();
-        sendMessage(event);
+        sendMessage();
       }
     };
     document.addEventListener("keydown", listener); //when component is loaded
@@ -146,9 +142,11 @@ export default function ChatScreen({ chat, messages }) {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Write a message..."
         />
-        <IconButton onClick={sendMessage}>
-          <SendIcon />
-        </IconButton>
+        <IconsContainer>
+          <IconButton onClick={sendMessage}>
+            <SendIcon />
+          </IconButton>
+        </IconsContainer>
       </InputBar>
     </Container>
   );
