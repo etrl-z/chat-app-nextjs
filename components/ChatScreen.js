@@ -16,6 +16,7 @@ import {
   addDoc,
   query,
   where,
+  orderBy,
   Timestamp,
 } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
@@ -33,17 +34,32 @@ export default function ChatScreen({ chat, messages }) {
   );
   const recipient = recipientSnapshot?.docs?.[0]?.data();
 
-  const [input, setInput] = useState();
-
+  const [messagesSnapshot] = useCollection(
+    query(
+      collection(db, "chats", chatId, "messages"),
+      orderBy("sentAtTime", "asc")
+    )
+  );
   const showMessages = () => {
-    return JSON.parse(messages).map((message) => (
-      <Message
-        key={message.id}
-        user={message.sender}
-        text={message.message}
-        sentAtTime={new Date(message.sentAtTime.seconds * 1000)}
-      />
-    ));
+    if (messagesSnapshot) {
+      return messagesSnapshot.docs.map((message) => (
+        <Message
+          key={message.data().id}
+          user={message.data().sender}
+          text={message.data().message}
+          sentAtTime={new Date(message.data().sentAtTime.seconds * 1000)}
+        />
+      ));
+    } else {
+      return JSON.parse(messages).map((message) => (
+        <Message
+          key={message.id}
+          user={message.sender}
+          text={message.message}
+          sentAtTime={new Date(message.sentAtTime.seconds * 1000)}
+        />
+      ));
+    }
   };
 
   const endOfMessage = useRef();
@@ -53,6 +69,7 @@ export default function ChatScreen({ chat, messages }) {
     });
   };
 
+  const [input, setInput] = useState();
   function sendMessage() {
     if (!input) return;
     //Update Last Seen on current user
@@ -72,6 +89,7 @@ export default function ChatScreen({ chat, messages }) {
       sentAtTime: Timestamp.fromDate(new Date()),
     });
     setInput("");
+    scrollToBottom();
   }
 
   //call send function when Enter is pressed
