@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { doc, deleteDoc, collection, query, where } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
+import { device } from '../utils/deviceBreakpoints.js';
 
 export default function Chat({ id, users }) {
   const [user] = useAuthState(auth);
