@@ -64,9 +64,13 @@ export default function ChatScreen({ chat, messages }) {
 
   const endOfMessage = useRef();
   const scrollToBottom = () => {
-    endOfMessage.current.scrollIntoView({
-      behavior: "smooth",
-    });
+    if (endOfMessage.current) {
+      endOfMessage.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
   };
 
   const [input, setInput] = useState();
@@ -106,8 +110,12 @@ export default function ChatScreen({ chat, messages }) {
     };
   });
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messagesSnapshot]);
+
   return (
-    <Container onLoad={scrollToBottom}>
+    <Container>
       <Header>
         {recipient ? (
           <UserAvatar src={recipient.photoURL}></UserAvatar>
@@ -213,8 +221,8 @@ const MessageContainer = styled.div`
   position: relative;
   background-color: #e4ded9;
   padding: 0 60px;
-  padding-bottom: 100px;
-  height: calc(100vh - 80px);
+  scroll-padding-bottom: 100px;
+  height: calc(100vh - 160px);
   overflow-y: scroll;
 
   ::-webkit-scrollbar {
@@ -225,7 +233,7 @@ const MessageContainer = styled.div`
   scrollbar-width: none; //Firefox
 `;
 const EndOfMessage = styled.div`
-  height: 0px;
+  height: 20px;
 `;
 const InputBar = styled.div`
   position: sticky;
