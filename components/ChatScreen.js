@@ -20,7 +20,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
@@ -104,7 +104,7 @@ export default function ChatScreen({ chat, messages }) {
     return () => {
       document.removeEventListener("keydown", listener); //destroys the component
     };
-  }, [input]);
+  });
 
   return (
     <Container onLoad={scrollToBottom}>
@@ -213,7 +213,8 @@ const MessageContainer = styled.div`
   position: relative;
   background-color: #e4ded9;
   padding: 0 60px;
-  height: 77.5vh;
+  padding-bottom: 100px;
+  height: calc(100vh - 80px);
   overflow-y: scroll;
 
   ::-webkit-scrollbar {
@@ -224,7 +225,7 @@ const MessageContainer = styled.div`
   scrollbar-width: none; //Firefox
 `;
 const EndOfMessage = styled.div`
-  height: 120px;
+  height: 0px;
 `;
 const InputBar = styled.div`
   position: sticky;
