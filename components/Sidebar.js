@@ -3,6 +3,7 @@ import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AddIcon from "@material-ui/icons/Add";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
@@ -58,7 +59,7 @@ export default function Sidebar() {
     <Container>
       <Header>
         <HeaderInfo>
-          <UsrAvatar src={user.photoURL} onClick={signOut} />
+          <UsrAvatar src={user.photoURL} />
           <h3>Hello, {user.displayName.split(" ")[0]}!</h3>
         </HeaderInfo>
         <IconsContainer>
@@ -88,6 +89,14 @@ export default function Sidebar() {
           <Chat key={chat.id} id={chat.id} users={chat.data().users} />
         ))}
       </ChatsContainer>
+
+      <LogOutButton onClick={signOut}>
+        <ExitToApp>
+          <ExitToAppIcon />
+        </ExitToApp >
+        Log Out
+      </LogOutButton>
+
     </Container>
   );
 }
@@ -97,14 +106,9 @@ const Container = styled.div`
   min-width: 300px;
   max-width: 500px;
   border-right: 2px solid whitesmoke;
-  overflow-y: scroll;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
-  -ms-overflow-style: none; //IE, Edge
-  scrollbar-width: none; //Firefox
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 `;
 const Header = styled.div`
   position: sticky;
@@ -157,4 +161,26 @@ const CreateButton = styled(Button)`
     border-bottom: 2px solid whitesmoke;
   }
 `;
-const ChatsContainer = styled.div``;
+const ChatsContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+`;
+const LogOutButton = styled(Button)`
+  width: 100%;
+  height: 50px;
+  &&& {
+    color: #c04242ff;
+    border-top: 2px solid whitesmoke;
+    background-color: white;
+  }
+`;
+const ExitToApp = styled.div`
+  color: #c04242ff;
+  padding: 10px;
+`;
