@@ -36,4 +36,4 @@ yarn-error.log*
 .vercel
 
 #config
-appconfig.json
+.env.local
