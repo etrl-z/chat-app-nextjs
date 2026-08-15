@@ -20,7 +20,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import getRecipientEmail from "../utils/getRecipientEmail.js";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
@@ -62,16 +62,16 @@ export default function ChatScreen({ chat, messages }) {
     }
   };
 
-  const endOfMessage = useRef();
-  const scrollToBottom = () => {
-    if (endOfMessage.current) {
-      endOfMessage.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-        inline: "nearest",
+  const messageContainer = useRef();
+  const scrollToBottom = (behavior = "smooth") => {
+    if (messageContainer.current) {
+      messageContainer.current.scrollTo({
+        top: messageContainer.current.scrollHeight,
+        behavior,
       });
     }
   };
+  const hasLoadedMessages = useRef(false);
 
   const [input, setInput] = useState();
   function sendMessage() {
@@ -110,7 +110,22 @@ export default function ChatScreen({ chat, messages }) {
     };
   });
 
+  // A dynamic Next.js page is reused when moving between /chat/[id] routes.
+  // Reset and position this specific chat's message container before it is painted.
+  useLayoutEffect(() => {
+    hasLoadedMessages.current = false;
+    scrollToBottom("auto");
+  }, [chat.id, messages]);
+
   useEffect(() => {
+    if (!messagesSnapshot) return;
+
+    if (!hasLoadedMessages.current) {
+      hasLoadedMessages.current = true;
+      scrollToBottom("auto");
+      return;
+    }
+
     scrollToBottom();
   }, [messagesSnapshot]);
 
@@ -149,9 +164,8 @@ export default function ChatScreen({ chat, messages }) {
         </IconsContainer>
       </Header>
 
-      <MessageContainer>
+      <MessageContainer ref={messageContainer}>
         {showMessages()}
-        <EndOfMessage ref={endOfMessage} />
       </MessageContainer>
 
       <InputBar>
@@ -220,7 +234,7 @@ const IconsContainer = styled.div`
 const MessageContainer = styled.div`
   position: relative;
   background-color: #e4ded9;
-  padding: 0 60px;
+  padding: 0 60px 16px;
   scroll-padding-bottom: 100px;
   height: calc(100vh - 160px);
   overflow-y: scroll;
@@ -231,9 +245,6 @@ const MessageContainer = styled.div`
 
   -ms-overflow-style: none; //IE, Edge
   scrollbar-width: none; //Firefox
-`;
-const EndOfMessage = styled.div`
-  height: 20px;
 `;
 const InputBar = styled.div`
   position: sticky;

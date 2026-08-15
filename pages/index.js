@@ -46,14 +46,3 @@ const Logo = styled.img`
   width: 200px;
   margin: 0 100px 20px;
 `;
-
-/*----------------------------------------------------------------*/
-
-// styled components
-// material ui / core
-// material ui / icons
-// firebase
-// email validator
-// react-firebase-hooks
-// timeago-react
-// moment

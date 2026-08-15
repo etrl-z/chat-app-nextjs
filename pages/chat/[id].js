@@ -32,7 +32,7 @@ export default function Chat({ chat, messages }) {
 
       <Sidebar />
 
-      <ChatScreen chat={chat} messages={messages} />
+      <ChatScreen key={chat.id} chat={chat} messages={messages} />
     </Container>
   );
 }
